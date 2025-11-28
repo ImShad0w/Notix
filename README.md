@@ -1,7 +1,21 @@
-# Notix
+# bun-react-template
 
-Boost your note taking and recall capabilities.
+To install dependencies:
 
-## What it is?
+```bash
+bun install
+```
 
-A simple note taking app, that helps you recall or create new ideas based on your notes
+To start a development server:
+
+```bash
+bun dev
+```
+
+To run for production:
+
+```bash
+bun start
+```
+
+This project was created using `bun init` in bun v1.3.3. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
