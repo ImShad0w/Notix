@@ -3,8 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Note extends Model
 {
-    protected $fillable = ["text"];
+    use HasFactory;
+
+    protected $fillable = ["name", "text"];
 }
