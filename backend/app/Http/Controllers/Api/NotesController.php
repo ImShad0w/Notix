@@ -46,4 +46,9 @@ class NotesController extends Controller
         $note->text = $text;
         $note->save();
     }
+
+    public function delete (string $id){
+        $note = Note::find($id);
+        $note->delete();
+    }
 }

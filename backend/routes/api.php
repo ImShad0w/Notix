@@ -9,4 +9,5 @@ Route::controller(NotesController::class)->group(function(){
     Route::get("/notes/{note}", "showNote");
     Route::post("/notes", "store");
     Route::put("/notes/{id}", "modify");
+    Route::delete("/notes/{id}", "delete");
 });
