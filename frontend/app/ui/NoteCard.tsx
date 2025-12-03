@@ -1,14 +1,18 @@
 'use client'
 
+import Link from "next/link";
+
 interface NoteProps {
   name: string,
+  id: number,
 }
 
-export default function NoteCard({ name }: NoteProps) {
-
+export default function NoteCard({ name, id }: NoteProps) {
   return (
-    <div className=" text-sm p-5 text-white">
-      <h1>{name}</h1>
-    </div>
-  )
+    <Link href={`/notes/${id}`}>
+      <div className="p-4 rounded cursor-pointer hover:bg-[#94e2d5]">
+        {name}
+      </div>
+    </Link>
+  );
 }
