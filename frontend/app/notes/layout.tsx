@@ -2,8 +2,11 @@
 
 import useNotes from "../hooks/useNotes";
 import NoteSideBar from "../ui/NoteSideBar";
+import useNotesStore from "../store/NoteStore";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { loading, notes } = useNotes();
+  const { loading } = useNotes();
+  const { notes } = useNotesStore();
   if (loading) {
     return <h1>Loading...</h1>
   }

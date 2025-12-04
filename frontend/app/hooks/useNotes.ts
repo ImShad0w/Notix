@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
+import useNotesStore from "../store/NoteStore";
 
 const useNotes = () => {
-  const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(false);
+  const { setNotes } = useNotesStore();
 
   useEffect(() => {
     const getNotes = async () => {
@@ -19,7 +20,7 @@ const useNotes = () => {
     }
     getNotes();
   }, [])
-  return { notes, loading }
+  return { loading }
 }
 
 export default useNotes;

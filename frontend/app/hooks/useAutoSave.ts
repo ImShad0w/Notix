@@ -1,6 +1,2 @@
-import { useEffect, useRef } from "react";
-
-const useAutoSave = () => {
-  const timeout = useRef<NodeJS.Timeout | null>(null);
-
-}
+//Learn what is useRef and use it to create a timer
+//Understand the logic behind what i want to make
