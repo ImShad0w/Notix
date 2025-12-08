@@ -14,7 +14,7 @@ interface NotesStore {
   setCurrentNote: (note: Note) => void;
   updateCurrentNoteName: (name: string) => void;
   updateCurrentNoteText: (text: string) => void;
-
+  getNote: (id: number | string) => Note | undefined;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -24,19 +24,39 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   setNotes: (notes) => set({ notes }),
   setCurrentNote: (note) => set({ currentNote: note }),
 
+  //Updates the name and stores it in the new notes array
   updateCurrentNoteName: (name) =>
-    set((state) => ({
-      currentNote: state.currentNote
-        ? { ...state.currentNote, name }
-        : null
-    })),
+    set((state) => {
+      if (!state.currentNote) return {};
 
+      const updated = { ...state.currentNote, name };
+
+      return {
+        currentNote: updated,
+        notes: state.notes.map((n) =>
+          n.id === updated.id ? updated : n
+        ),
+      };
+    }),
+
+  //Updates the text and stores it in the new notes array
   updateCurrentNoteText: (text) =>
-    set((state) => ({
-      currentNote: state.currentNote
-        ? { ...state.currentNote, text }
-        : null
-    })),
+    set((state) => {
+      if (!state.currentNote) return {};
+
+      const updated = { ...state.currentNote, text };
+
+      return {
+        currentNote: updated,
+        notes: state.notes.map((n) =>
+          n.id === updated.id ? updated : n
+        ),
+      };
+    }),
+  getNote: (id) => {
+    const state = get();
+    return state.notes.find(note => note.id === id);
+  }
 }));
 
 export default useNotesStore;

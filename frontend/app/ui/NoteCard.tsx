@@ -2,16 +2,20 @@
 
 import Link from "next/link";
 
-interface NoteProps {
-  name: string,
+interface Note {
   id: number,
+  name: string,
+  text: string,
 }
 
-export default function NoteCard({ name, id }: NoteProps) {
+interface NoteCardProps {
+  note: Note,
+}
+export default function NoteCard({ note }: NoteCardProps) {
   return (
-    <Link href={`/notes/${id}`}>
+    <Link href={`/notes/${note.id}`}>
       <div className="p-4 rounded cursor-pointer hover:bg-[#94e2d5]">
-        {name}
+        {note.name}
       </div>
     </Link>
   );
