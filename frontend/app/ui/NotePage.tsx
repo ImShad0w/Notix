@@ -15,7 +15,7 @@ interface Props {
 
 function NotePage({ note }: Props) {
 
-  const { updateCurrentNoteName, updateCurrentNoteText, setCurrentNote, currentNote } = useNotesStore();
+  const { updateCurrentNoteName, updateCurrentNoteText, setCurrentNote, currentNote, saveCurrentNote } = useNotesStore();
 
   //Set the current note and render it once
   useEffect(() => {
@@ -25,11 +25,13 @@ function NotePage({ note }: Props) {
   function handleInputName(e: any) {
     //Also change it globally with store
     updateCurrentNoteName(e.target.value);
+    saveCurrentNote(); // Will change this to an autoSave hook later
   }
 
   function handleInputText(e: any) {
     //Also change it globally with store
     updateCurrentNoteText(e.target.value);
+    saveCurrentNote(); // Will change this to an autoSave hook later
   }
   return (
     <div className="flex flex-col gap-8">

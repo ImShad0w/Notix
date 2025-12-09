@@ -15,6 +15,7 @@ interface NotesStore {
   updateCurrentNoteName: (name: string) => void;
   updateCurrentNoteText: (text: string) => void;
   getNote: (id: number | string) => Note | undefined;
+  saveCurrentNote: () => void;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -56,6 +57,20 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   getNote: (id) => {
     const state = get();
     return state.notes.find(note => note.id === id);
+  },
+
+  saveCurrentNote: async () => {
+    const { currentNote } = get();
+    if (!currentNote) return {};
+    console.log(JSON.stringify(currentNote));
+    await fetch(`http://localhost:8000/api/notes/${currentNote.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: currentNote.name,
+        text: currentNote.text
+      })
+    })
   }
 }));
 
