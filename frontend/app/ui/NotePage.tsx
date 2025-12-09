@@ -33,10 +33,19 @@ function NotePage({ note }: Props) {
     updateCurrentNoteText(e.target.value);
     saveCurrentNote(); // Will change this to an autoSave hook later
   }
+
+  function renderNote() {
+    return (
+      <>
+        <input type="text" value={currentNote?.name} className="text-5xl" onChange={handleInputName} />
+        <textarea value={currentNote?.text} onChange={handleInputText} />
+      </>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-8">
-      <input type="text" value={currentNote?.name} className="text-5xl" onChange={handleInputName} />
-      <textarea value={currentNote?.text} onChange={handleInputText} />
+      {currentNote ? renderNote() : <h1>No note available!</h1>}
     </div >
   )
 }

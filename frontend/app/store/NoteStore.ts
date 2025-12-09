@@ -62,7 +62,6 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   saveCurrentNote: async () => {
     const { currentNote } = get();
     if (!currentNote) return {};
-    console.log(JSON.stringify(currentNote));
     await fetch(`http://localhost:8000/api/notes/${currentNote.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
