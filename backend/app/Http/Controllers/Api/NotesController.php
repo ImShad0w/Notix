@@ -23,7 +23,7 @@ class NotesController extends Controller
             "text" => 'required:string',
         ]);
         //Create the new note
-        Note::create([$validated]);
+        Note::create($validated);
         //return Succesfull
         return response()->json(["message"=>"Succesfully added note!"]);
     }

@@ -16,6 +16,7 @@ interface NotesStore {
   updateCurrentNoteText: (text: string) => void;
   getNote: (id: number | string) => Note | undefined;
   saveCurrentNote: () => void;
+  createNote: () => void;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -70,6 +71,25 @@ const useNotesStore = create<NotesStore>((set, get) => ({
         text: currentNote.text
       })
     })
+  },
+  createNote: () => {
+    const { notes } = get();
+    const nextId = //Since laravel stores the changed notes at the bottom i will recurr to biggest id instead of the last
+      notes.length > 0
+        ? Math.max(...notes.map((n) => n.id)) + 1
+        : 1;
+    const newNote: Note = { id: nextId, name: "Untitled", text: "Dummy text" };//Create a new Note
+    //Send it to laravel too
+    fetch(`http://localhost:8000/api/notes/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Untitled",
+        text: "Dummy text"
+      })
+    })
+    set({ notes: [...notes, newNote] })//Append it to the array and the current note
+    return newNote.id;
   }
 }));
 
