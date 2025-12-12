@@ -17,6 +17,7 @@ interface NotesStore {
   getNote: (id: number | string) => Note | undefined;
   saveCurrentNote: () => void;
   createNote: () => void;
+  deleteNote: (id: number) => void;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -90,6 +91,16 @@ const useNotesStore = create<NotesStore>((set, get) => ({
     })
     set({ notes: [...notes, newNote] })//Append it to the array and the current note
     return newNote.id;
+  },
+  deleteNote: (id) => {
+    const { notes, currentNote } = get();
+    const filteredNotes = notes.filter(note => note.id != id);
+    if (currentNote) {
+      fetch(`http://localhost:8000/api/notes/${currentNote.id}`, {
+        method: "DELETE",
+      })
+    }
+    set({ notes: filteredNotes })
   }
 }));
 

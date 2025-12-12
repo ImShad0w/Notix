@@ -10,7 +10,7 @@ interface Note {
 
 function NoteSideBar({ notes }: { notes: Note[] }) {
 
-  const { createNote } = useNotesStore();
+  const { createNote, deleteNote, currentNote } = useNotesStore();
   const router = useRouter();
 
   function handleCreate() {
@@ -18,11 +18,17 @@ function NoteSideBar({ notes }: { notes: Note[] }) {
     router.push(`/notes/${id}`);
   }
 
+  function handleDelete() {
+    if (!currentNote) return;
+    deleteNote(currentNote.id);
+    router.push("/notes");
+  }
+
   return (
     <section className="bg-[#11111b]">
       <div className="flex gap-10 p-3">
         <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleCreate}>Create note</button>
-        <button className="bg-[#181825] text-[#8c8fa1]">Delete note</button>
+        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleDelete}>Delete note</button>
         <button className="bg-[#181825] text-[#8c8fa1]">Collapse</button>
       </div>
       {notes.map((note: Note) => (
