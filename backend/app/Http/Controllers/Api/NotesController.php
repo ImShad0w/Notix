@@ -22,33 +22,29 @@ class NotesController extends Controller
             "name" => 'required:string|max:255',
             "text" => 'required:string',
         ]);
+        $nextNumber = Note::max('note_number') + 1;
         //Create the new note
-        Note::create($validated);
+        Note::create([
+            ...$validated,
+            "note_number" => $nextNumber,
+        ]);
         //return Succesfull
         return response()->json(["message"=>"Succesfully added note!"]);
     }
 
-    public function modify(Request $request, string $id){
-
-        //Validate the input
+    public function modify(Request $request, Note $note)
+    {
         $validated = $request->validate([
-            "name" => 'required:string|max:255',
-            "text" => 'required:string',
+            'name' => 'required|string|max:255',
+            'text' => 'required|string',
         ]);
 
-        //Pull the stuff i need
-        $name = Arr::pull($validated, 'name');
-        $text = Arr::pull($validated, 'text');
+        $note->update($validated);
 
-        //Find the note
-        $note = Note::find($id);
-        $note->name = $name;
-        $note->text = $text;
-        $note->save();
+        return response()->json($note);
     }
 
-    public function delete (string $id){
-        $note = Note::find($id);
+    public function delete (Note $note){
         $note->delete();
     }
 }

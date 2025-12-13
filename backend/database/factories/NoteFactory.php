@@ -17,7 +17,9 @@ class NoteFactory extends Factory
     protected $model = Note::class;
     public function definition(): array
     {
+        static $noteNumber = 1;
         return [
+            "note_number" => $noteNumber++,
             "name"=>$this->faker->sentence(),
             "text"=>$this->faker->paragraph(),
         ];

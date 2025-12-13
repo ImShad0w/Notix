@@ -8,6 +8,6 @@ Route::controller(NotesController::class)->group(function(){
     Route::get("/notes", "show");
     Route::get("/notes/{note}", "showNote");
     Route::post("/notes", "store");
-    Route::put("/notes/{id}", "modify");
-    Route::delete("/notes/{id}", "delete");
+    Route::put('/notes/{note}', [NotesController::class, 'modify']);
+    Route::delete('/notes/{note}', [NotesController::class, 'delete']);
 });
