@@ -3,7 +3,13 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\NotesController;
+use App\Http\Controllers\Api\AuthController;
+//For CSRF Cookie
+Route::get('/sanctum/csrf-cookie', function () {
+    return response()->noContent();
+});
 
+//API routes, will protect them after cookie-based auth is working
 Route::controller(NotesController::class)->group(function(){
     Route::get("/notes", "show");
     Route::get("/notes/{note}", "showNote");
@@ -11,3 +17,6 @@ Route::controller(NotesController::class)->group(function(){
     Route::put('/notes/{note}', [NotesController::class, 'modify']);
     Route::delete('/notes/{note}', [NotesController::class, 'delete']);
 });
+
+Route::post("/register", [AuthController::class, "register"]);
+Route::get("/me", [AuthController::class, "me"]);
