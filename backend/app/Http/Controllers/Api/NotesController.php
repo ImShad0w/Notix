@@ -6,17 +6,21 @@ use Illuminate\Http\Request;
 use App\Models\Note;
 use App\Http\Resources\NoteResource;
 use Illuminate\Support\Arr;
+
 class NotesController extends Controller
 {
-    public function show(){
+    public function show()
+    {
         return NoteResource::collection(Note::all());
     }
 
-    public function showNote(Note $note){
+    public function showNote(Note $note)
+    {
         return $note;
     }
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         //Get the requested text for the note
         $validated = $request->validate([
             "name" => 'required:string|max:255',
@@ -29,7 +33,7 @@ class NotesController extends Controller
             "note_number" => $nextNumber,
         ]);
         //return Succesfull
-        return response()->json(["message"=>"Succesfully added note!"]);
+        return response()->json(["message" => "Succesfully added note!"]);
     }
 
     public function modify(Request $request, Note $note)
@@ -44,7 +48,8 @@ class NotesController extends Controller
         return response()->json($note);
     }
 
-    public function delete (Note $note){
+    public function delete(Note $note)
+    {
         $note->delete();
     }
 }

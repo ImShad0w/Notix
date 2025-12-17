@@ -7,7 +7,7 @@ export default function HomePage() {
   const router = useRouter();
   useEffect(() => {
     const fetchCsrf = async () => {
-      await fetch("http://localhost:8000/api/sanctum/csrf-cookie", {
+      await fetch("http://localhost:8000/sanctum/csrf-cookie", {
         method: "GET",
         credentials: "include",
       });

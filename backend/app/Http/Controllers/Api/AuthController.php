@@ -42,4 +42,22 @@ class AuthController extends Controller
 
         return response()->noContent();
     }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if (!Auth::attempt($credentials)) {
+            return response()->json([
+                'message' => 'Invalid credentials'
+            ], 401);
+        }
+
+        $request->session()->regenerate();
+
+        return response()->json(auth()->user());
+    }
 }

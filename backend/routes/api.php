@@ -21,3 +21,4 @@ Route::controller(NotesController::class)->group(function(){
 Route::post("/register", [AuthController::class, "register"]);
 Route::get("/me", [AuthController::class, "me"]);
 Route::post("/logout", [AuthController::class, "logout"]);
+Route::post("/login", [AuthController::class, "login"]);

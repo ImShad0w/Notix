@@ -1,5 +1,7 @@
+import RegisterPage from "../ui/RegisterPage";
+
 function Register() {
-  return <h1>Register page!</h1>
+  return <RegisterPage />
 }
 
 export default Register;
