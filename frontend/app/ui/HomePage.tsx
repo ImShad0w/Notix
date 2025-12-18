@@ -1,19 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function HomePage() {
   const router = useRouter();
-  useEffect(() => {
-    const fetchCsrf = async () => {
-      await fetch("http://localhost:8000/sanctum/csrf-cookie", {
-        method: "GET",
-        credentials: "include",
-      });
-    };
-    fetchCsrf();
-  }, []);
 
   function handleRegister() {
     router.push("/register");

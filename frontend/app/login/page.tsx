@@ -1,5 +1,7 @@
+import LoginPage from "../ui/LoginPage";
+
 function Login() {
-  return <h1>Login page!</h1>
+  return <LoginPage />
 }
 
 export default Login;

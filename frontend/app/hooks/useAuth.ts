@@ -1,49 +1,79 @@
 import { useState } from "react";
+import { api } from "../lib/api";
 
 type User = {
   username: string;
   email: string;
 };
 
-export const useAuth = () => {
+export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const register = async (data: { name: string, email: string, password: string, password_confirmation: string }) => {
-    const res = await fetch("http://localhost:8000/api/register", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    })
-    if (!res.ok) throw new Error('Registration failed');
-
-    const meRes = await fetch('http://localhost:8000/api/me', { credentials: 'include' });
-    const userData = await meRes.json();
-    console.log(userData);
-    setUser(userData);
-  }
-  const login = async (data: { name: string, password: string }) => {
-    const res = await fetch("http://localhost:8000/api/login", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
-    })
-
-    if (!res.ok) throw new Error("Login failed");
-    const meRes = await fetch('http://localhost:8000/api/me', { credentials: 'include' });
-    const userData = await meRes.json();
-    setUser(userData);
-  }
-  const verifyUser = async () => {
-    const res = await fetch('http://localhost:8000/api/me', { credentials: 'include' });
-    if (!res.ok) return setUser(null);
-    const userData = await res.json();
-    setUser(userData);
+  const getCsrf = async () => {
+    await api.get("/sanctum/csrf-cookie");
   };
+
+  const register = async (data: {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+  }) => {
+    setError(null);
+
+    try {
+      await getCsrf();
+      const res = await api.post("/api/register", data);
+      setUser(res.data);
+      console.log(res.data);
+      return res.data;
+    } catch (err: any) {
+      setError(err.response?.data?.message ?? "Register failed");
+      throw err;
+    }
+  };
+
+  const login = async (data: {
+    email: string;
+    password: string;
+  }) => {
+    setError(null);
+
+    try {
+      await getCsrf();
+      const res = await api.post("/api/login", data);
+      setUser(res.data);
+      console.log(res.data);
+      return res.data;
+    } catch (err: any) {
+      setError(err.response?.data?.message ?? "Login failed");
+      throw err;
+    }
+  };
+
+  const verifyUser = async () => {
+    try {
+      const res = await api.get("/api/me");
+      setUser(res.data);
+      return res.data;
+    } catch {
+      setUser(null);
+      return null;
+    }
+  };
+
   const logout = async () => {
-    await fetch('http://localhost:8000/api/logout', { method: 'POST', credentials: 'include' });
+    await api.post("/api/logout");
     setUser(null);
   };
-  return { user, register, login, logout, verifyUser }
+
+  return {
+    user,
+    error,
+    register,
+    login,
+    logout,
+    verifyUser,
+  };
 }
