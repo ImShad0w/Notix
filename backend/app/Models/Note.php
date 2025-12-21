@@ -10,10 +10,15 @@ class Note extends Model
     use HasFactory;
 
     protected $fillable = ["name", "text", "note_number"];
-    protected $hidden = ["id"];
+    protected $hidden = ["id" ,"user_id"];
 
     public function getRouteKeyName()
     {
         return 'note_number';
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

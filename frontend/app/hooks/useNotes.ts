@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useNotesStore from "../store/NoteStore";
+import { api } from "../lib/api";
 
 const useNotes = () => {
   const [loading, setLoading] = useState(false);
@@ -9,9 +10,8 @@ const useNotes = () => {
     const getNotes = async () => {
       setLoading(true);
       try {
-        const res = await fetch("http://localhost:8000/api/notes");
-        const data = await res.json();
-        setNotes(data.data);
+        const res = await api.get("/api/notes");
+        setNotes(res.data.data);
       } catch (err: any) {
         console.error(err.message);
       } finally {
