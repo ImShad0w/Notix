@@ -7,15 +7,19 @@ import useNotesStore from "../store/NoteStore";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { loading } = useNotes();
   const { notes } = useNotesStore();
+
   if (loading) {
-    return <h1>Loading...</h1>
+    return <h1>Loading...</h1>;
   }
+
   return (
     <main className="grid grid-cols-[15%_85%] h-screen w-screen">
       <aside className="overflow-y-auto">
         <NoteSideBar notes={notes} />
       </aside>
-      <section className="bg-[#181825] overflow-y-auto flex flex-column p-20">{children}</section>
+      <section className="bg-[#181825] overflow-y-auto flex flex-col p-20">
+        {children}
+      </section>
     </main>
-  )
+  );
 }

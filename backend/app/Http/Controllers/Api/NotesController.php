@@ -11,12 +11,17 @@ class NotesController extends Controller
 {
     public function show()
     {
-        return NoteResource::collection(Note::all());
+        return NoteResource::collection(
+            auth()->user()->notes()->get()
+        );
     }
 
     public function showNote(Note $note)
     {
-        return $note;
+        //Sees if the user has notes
+        abort_unless($note->user_id === auth()->id(), 403);
+
+        return new NoteResource($note);
     }
 
     public function store(Request $request)
@@ -26,18 +31,29 @@ class NotesController extends Controller
             "name" => 'required:string|max:255',
             "text" => 'required:string',
         ]);
-        $nextNumber = Note::max('note_number') + 1;
-        //Create the new note
-        Note::create([
+
+        //Get the highest number of the notes of the user
+        $nextNumber = auth()->user()->notes()->max('note_number') + 1;
+
+        //Create the new note based on the user
+        auth()->user()->notes()->create([
             ...$validated,
-            "note_number" => $nextNumber,
+            'note_number' => $nextNumber,
         ]);
-        //return Succesfull
+
         return response()->json(["message" => "Succesfully added note!"]);
     }
 
     public function modify(Request $request, Note $note)
     {
+        \Log::info('Note bound:', [
+            'note_number' => $note->note_number,
+            'user_id' => $note->user_id,
+            'auth_id' => auth()->id()
+        ]);
+
+        abort_unless($note->user_id === auth()->id(), 403);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'text' => 'required|string',
@@ -45,11 +61,13 @@ class NotesController extends Controller
 
         $note->update($validated);
 
-        return response()->json($note);
+        return new NoteResource($note);
     }
 
     public function delete(Note $note)
     {
+        abort_unless($note->user_id === auth()->id(), 403);
+
         $note->delete();
     }
 }

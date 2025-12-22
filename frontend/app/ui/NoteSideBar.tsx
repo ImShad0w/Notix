@@ -1,6 +1,7 @@
 import NoteCard from "./NoteCard"
 import useNotesStore from "../store/NoteStore";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../hooks/useAuth";
 
 interface Note {
   name: string,
@@ -12,6 +13,7 @@ function NoteSideBar({ notes }: { notes: Note[] }) {
 
   const { createNote, deleteNote, currentNote } = useNotesStore();
   const router = useRouter();
+  const { logout } = useAuth();
 
   function handleCreate() {
     const id = createNote();
@@ -24,12 +26,17 @@ function NoteSideBar({ notes }: { notes: Note[] }) {
     router.push("/notes");
   }
 
+  async function handleLogout() {
+    await logout();
+    router.push("/");
+  }
+
   return (
     <section className="bg-[#11111b]">
       <div className="flex gap-10 p-3">
         <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleCreate}>Create note</button>
         <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleDelete}>Delete note</button>
-        <button className="bg-[#181825] text-[#8c8fa1]">Collapse</button>
+        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleLogout}>Logout</button>
       </div>
       {notes.map((note: Note) => (
         <NoteCard note={note} key={note.id} />

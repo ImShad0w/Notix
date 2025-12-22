@@ -1,17 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "../lib/api";
 
 type User = {
-  username: string;
+  name: string;
   email: string;
 };
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [csrfReady, setCsrfReady] = useState(false);
 
-  const getCsrf = async () => {
+  useEffect(() => {
+    // On page refresh, check if user is already logged in
+    verifyUser();
+  }, []);
+
+  //CSRF Stuff
+  const fetchCsrf = async () => {
     await api.get("/sanctum/csrf-cookie");
+    setCsrfReady(true);
+  };
+
+  const ensureCsrf = async () => {
+    if (!csrfReady) {
+      await fetchCsrf();
+    }
   };
 
   const register = async (data: {
@@ -21,35 +35,36 @@ export function useAuth() {
     password_confirmation: string;
   }) => {
     setError(null);
+    await ensureCsrf();
 
     try {
-      await getCsrf();
-      const res = await api.post("/api/register", data);
-      setUser(res.data);
-      console.log(res.data);
-      return res.data;
+      await api.post("/api/register", data);
+      return await verifyUser();
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Register failed");
       throw err;
     }
   };
 
-  const login = async (data: {
-    email: string;
-    password: string;
-  }) => {
+  const login = async (data: { email: string; password: string }) => {
     setError(null);
+    await ensureCsrf();
 
     try {
-      await getCsrf();
-      const res = await api.post("/api/login", data);
-      setUser(res.data);
-      console.log(res.data);
-      return res.data;
+      await api.post("/api/login", data);
+      return await verifyUser();
     } catch (err: any) {
       setError(err.response?.data?.message ?? "Login failed");
       throw err;
     }
+  };
+
+  const logout = async () => {
+    await api.post("/api/logout");
+    setUser(null);
+
+    // mark CSRF as invalid; DO NOT refetch here
+    setCsrfReady(false);
   };
 
   const verifyUser = async () => {
@@ -61,11 +76,6 @@ export function useAuth() {
       setUser(null);
       return null;
     }
-  };
-
-  const logout = async () => {
-    await api.post("/api/logout");
-    setUser(null);
   };
 
   return {

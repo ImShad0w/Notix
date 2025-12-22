@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text("name");
             $table->text("text");
-            $table->integer('note_number')->unique();
+            $table->integer('note_number');
             $table->timestamps();
         });
     }

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { api } from "../lib/api";
 
 interface Note {
   id: number;
@@ -64,14 +65,11 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   saveCurrentNote: async () => {
     const { currentNote } = get();
     if (!currentNote) return {};
-    await fetch(`http://localhost:8000/api/notes/${currentNote.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: currentNote.name,
-        text: currentNote.text
-      })
-    })
+    api.put(`/api/notes/${currentNote.id}`, {
+      name: currentNote.name,
+      text: currentNote.text,
+    });
+
   },
   createNote: () => {
     const { notes } = get();
@@ -81,14 +79,10 @@ const useNotesStore = create<NotesStore>((set, get) => ({
         : 1;
     const newNote: Note = { id: nextId, name: "Untitled", text: "Dummy text" };//Create a new Note
     //Send it to laravel too
-    fetch(`http://localhost:8000/api/notes/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: "Untitled",
-        text: "Dummy text"
-      })
-    })
+    api.post("/api/notes", {
+      name: "Untitled",
+      text: "Dummy text",
+    });
     set({ notes: [...notes, newNote] })//Append it to the array and the current note
     return newNote.id;
   },
@@ -96,9 +90,7 @@ const useNotesStore = create<NotesStore>((set, get) => ({
     const { notes, currentNote } = get();
     const filteredNotes = notes.filter(note => note.id != id);
     if (currentNote) {
-      fetch(`http://localhost:8000/api/notes/${currentNote.id}`, {
-        method: "DELETE",
-      })
+      api.delete(`/api/notes/${currentNote.id}`);
     }
     set({ notes: filteredNotes })
   }
