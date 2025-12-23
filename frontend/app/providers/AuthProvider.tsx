@@ -20,7 +20,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  // 👇 ensures CSRF is fetched ONLY ONCE
   const csrfFetched = useRef(false);
 
   const fetchCsrfOnce = async () => {
@@ -38,7 +37,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 🔒 bootstrap auth ONCE
   useEffect(() => {
     const bootstrap = async () => {
       await fetchCsrfOnce();
@@ -60,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     await api.post("/api/logout");
     setUser(null);
-    // ❌ DO NOT reset CSRF
   };
 
   return (

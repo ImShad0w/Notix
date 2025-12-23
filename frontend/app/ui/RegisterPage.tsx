@@ -1,9 +1,11 @@
 'use client';
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../providers/AuthProvider";
+import { useRouter } from "next/navigation";
 
 function RegisterPage() {
   const { register } = useAuth();
+  const router = useRouter();
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -17,6 +19,7 @@ function RegisterPage() {
       password,
       password_confirmation: passConf,
     });
+    router.replace("/notes");
   }
 
   return (

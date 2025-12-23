@@ -1,10 +1,12 @@
 'use client';
 
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../providers/AuthProvider";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 function LoginPage() {
   const { login } = useAuth();
+  const router = useRouter();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -14,6 +16,7 @@ function LoginPage() {
       email: email,
       password: password,
     })
+    router.replace("/notes");
   }
 
   return (

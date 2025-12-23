@@ -1,7 +1,8 @@
 import NoteCard from "./NoteCard"
 import useNotesStore from "../store/NoteStore";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../providers/AuthProvider";
+import { Edit, Trash2, Power, Menu } from "@deemlol/next-icons";
 
 interface Note {
   name: string,
@@ -32,11 +33,20 @@ function NoteSideBar({ notes }: { notes: Note[] }) {
   }
 
   return (
-    <section className="bg-[#11111b]">
-      <div className="flex gap-10 p-3">
-        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleCreate}>Create note</button>
-        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleDelete}>Delete note</button>
-        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleLogout}>Logout</button>
+    <section className="bg-[#11111b] min-h-screen">
+      <div className="flex justify-center gap-5 p-3 sm:gap-2 pt-5">
+        <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleCreate}>
+          <Edit size={20} />
+        </button>
+        <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleDelete}>
+          <Trash2 size={20} />
+        </button>
+        <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleLogout}>
+          <Power size={20} />
+        </button>
+        <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg">
+          <Menu size={20} />
+        </button>
       </div>
       {notes.map((note: Note) => (
         <NoteCard note={note} key={note.id} />
