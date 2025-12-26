@@ -7,6 +7,10 @@ interface Note {
   text: string;
 }
 
+interface Folder {
+  name: string;
+}
+
 interface NotesStore {
   notes: Note[];
   currentNote: Note | null;
@@ -19,6 +23,8 @@ interface NotesStore {
   saveCurrentNote: () => void;
   createNote: () => void;
   deleteNote: (id: number) => void;
+  createFolder: () => void;
+  getFolders: () => void;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -93,7 +99,19 @@ const useNotesStore = create<NotesStore>((set, get) => ({
       api.delete(`/api/notes/${currentNote.id}`);
     }
     set({ notes: filteredNotes })
-  }
+  },
+
+  createFolder: () => {
+    api.post("/api/folder", {
+      name: "Test",
+    })
+  },
+
+  getFolders: async () => {
+    const folders = await api.get("/api/folder");
+    console.log(folders.data);
+    return folders;
+  },
 }));
 
 export default useNotesStore;

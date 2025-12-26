@@ -37,8 +37,8 @@ function NotePage({ note }: Props) {
   function renderNote() {
     return (
       <>
-        <input type="text" value={currentNote?.name} className="text-5xl w-auto" onChange={handleInputName} />
-        <textarea value={currentNote?.text} onChange={handleInputText} className="h-auto w-auto" />
+        <input type="text" value={currentNote?.name} className="text-7xl w-auto text-bold" onChange={handleInputName} />
+        <textarea value={currentNote?.text} onChange={handleInputText} className="min-h-screen w-auto text-3xl" />
       </>
     )
   }

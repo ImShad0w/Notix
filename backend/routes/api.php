@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\NotesController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Api\FolderController;
 
 Route::middleware('web')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
@@ -19,4 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notes', [NotesController::class, "store"]);
     Route::put('/notes/{note}', [NotesController::class, "modify"]);
     Route::delete('/notes/{note}', [NotesController::class, "delete"]);
+
+    Route::get('/folder', [FolderController::class, "show"]);
+    Route::post('/folder', [FolderController::class, "store"]);
 });
