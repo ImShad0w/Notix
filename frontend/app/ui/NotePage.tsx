@@ -7,6 +7,7 @@ interface Note {
   id: number,
   name: string,
   text: string,
+  folder_num: number | null;
 }
 
 interface Props {

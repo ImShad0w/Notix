@@ -13,14 +13,17 @@ Route::middleware('web')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
 });
 
-//API routes, will protect them after cookie-based auth is working
 Route::middleware('auth:sanctum')->group(function () {
+    //Notes protected API routes
     Route::get('/notes', [NotesController::class, "show"]);
     Route::get('/notes/{note}', [NotesController::class, "showNote"]);
     Route::post('/notes', [NotesController::class, "store"]);
     Route::put('/notes/{note}', [NotesController::class, "modify"]);
     Route::delete('/notes/{note}', [NotesController::class, "delete"]);
-
-    Route::get('/folder', [FolderController::class, "show"]);
-    Route::post('/folder', [FolderController::class, "store"]);
+    //Folder protected API Routes
+    Route::get('/folders', [FolderController::class, "show"]);
+    Route::post('/folders', [FolderController::class, "store"]);
+    Route::put('/folders/{folder}', [FolderController::class, "modify"]);
+    Route::delete('/folders/{folder}', [FolderController::class, "delete"]);
+    //TODO: Add addNoteToFolder and removeNoteFromFolder in here
 });

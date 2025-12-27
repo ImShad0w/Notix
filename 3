@@ -17,7 +17,6 @@ interface NotesStore {
   notes: Note[];
   currentNote: Note | null;
   folders: Folder[];
-  activeFolder: Folder | null;
 
   setNotes: (notes: Note[]) => void;
   setCurrentNote: (note: Note) => void;
@@ -28,16 +27,13 @@ interface NotesStore {
   createNote: () => void;
   deleteNote: (id: number) => void;
   createFolder: () => void;
-  setFolders: (folders: Folder[]) => void;
-  setActiveFolder: (folder: Folder) => void;
-  deleteFolder: (id: number) => void;
+  setFolders: () => void;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
   notes: [],
   currentNote: null,
   folders: [],
-  activeFolder: null,
 
   setNotes: (notes) => set({ notes }),
   setCurrentNote: (note) => set({ currentNote: note }),
@@ -111,32 +107,15 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   },
 
   createFolder: () => {
-    const { folders } = get();
-
-    const nextId =
-      folders.length > 0
-        ? Math.max(...folders.map((f) => f.id)) + 1
-        : 1;
-    const newFolder: Folder = { id: nextId, name: "Test" };
-
     api.post("/api/folders", {
       name: "Test",
     })
-
-    set({ folders: [...folders, newFolder] });
   },
 
-  setFolders: (folders) => set({ folders }),
-
-  setActiveFolder: (folder) => set({ activeFolder: folder }),
-
-  deleteFolder: (id) => {
-    const { folders, activeFolder } = get();
-    const filteredFolders = folders.filter(folder => folder.id != id);
-    if (activeFolder) {
-      api.delete(`/api/folders/${activeFolder.id}`)
-    }
-    set({ folders: filteredFolders });
+  getFolders: async () => {
+    const folders = await api.get("/api/folders");
+    console.log(folders.data);
+    return folders;
   },
 }));
 

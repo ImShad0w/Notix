@@ -1,6 +1,7 @@
 'use client';
 
 import useNotes from "../hooks/useNotes";
+import useFolders from "../hooks/useFolders";
 import NoteSideBar from "../ui/NoteSideBar";
 import useNotesStore from "../store/NoteStore";
 import { useAuth } from "../providers/AuthProvider";
@@ -10,7 +11,8 @@ import { useRouter } from "next/navigation";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const { loading } = useNotes();
-  const { notes } = useNotesStore();
+  const { loadingFolders } = useFolders();
+  const { notes, folders } = useNotesStore();
   const { user } = useAuth();
   const router = useRouter();
 
@@ -20,14 +22,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [user, router])
 
-  if (loading) {
+  if (loading && loadingFolders) {
     return <h1>Loading...</h1>;
   }
+
   return (
     <main className="grid grid-cols-[auto_1fr] h-screen w-screen">
       <aside className="overflow-y-auto min-h-screen">
         <NoteSideBar
           notes={notes}
+          folders={folders}
           collapsed={collapsed}
           onToggle={() => setCollapsed(prev => !prev)}
         />

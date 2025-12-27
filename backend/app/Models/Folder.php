@@ -6,9 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Folder extends Model
 {
-    protected $fillable = ["name"];
+    protected $fillable = ["name", "folder_num"];
 
     protected $hidden = ["id"];
+
+    public function getRouteKeyName()
+    {
+        return 'folder_num';
+    }
 
     public function user()
     {
