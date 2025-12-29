@@ -13,14 +13,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { loading } = useNotes();
   const { loadingFolders } = useFolders();
   const { notes, folders } = useNotesStore();
-  const { user } = useAuth();
+  const { user, authLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (user === null) {
+    if (!authLoading && user === null) {
       router.replace("/");
     }
-  }, [user, router])
+  }, [user, authLoading, router])
 
   if (loading && loadingFolders) {
     return <h1>Loading...</h1>;

@@ -13,12 +13,14 @@ type AuthContextType = {
   login: (data: { email: string; password: string }) => Promise<void>;
   logout: () => Promise<void>;
   register: (data: any) => Promise<void>;
+  authLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState<boolean>(true)
 
   const csrfFetched = useRef(false);
 
@@ -34,6 +36,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(res.data);
     } catch {
       setUser(null);
+    } finally {
+      setAuthLoading(false);
     }
   };
 
@@ -61,7 +65,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, register }}>
+    <AuthContext.Provider value={{ user, login, logout, register, authLoading }}>
       {children}
     </AuthContext.Provider>
   );
