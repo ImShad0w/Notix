@@ -75,11 +75,13 @@ export default function FolderCard({
         {isActive && (
           <div className="flex items-center gap-2">
             <Edit2
+              data-cy="edit-folder"
               size={15}
               onClick={handleEditFolder}
               className="cursor-pointer"
             />
             <Trash2
+              data-cy="delete-folder"
               size={15}
               onClick={handleDeleteFolder}
               className="cursor-pointer hover:text-red-500"
