@@ -14,11 +14,11 @@ class FolderController extends Controller
             "name" => 'required|string|max:200',
         ]);
 
-        $nextNumber = auth()->user()->folders()->max('folder_num') + 1;
+        $nextNumber = auth()->user()->folders()->max('folder_id') + 1;
 
         auth()->user()->folders()->create([
             ...$validated,
-            "folder_num" => $nextNumber,
+            "folder_id" => $nextNumber,
         ]);
 
         return response()->json(["message" => "Succesfully created folder!"]);

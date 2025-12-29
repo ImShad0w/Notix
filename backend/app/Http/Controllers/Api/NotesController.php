@@ -46,17 +46,13 @@ class NotesController extends Controller
 
     public function modify(Request $request, Note $note)
     {
-        \Log::info('Note bound:', [
-            'note_number' => $note->note_number,
-            'user_id' => $note->user_id,
-            'auth_id' => auth()->id()
-        ]);
 
         abort_unless($note->user_id === auth()->id(), 403);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'text' => 'required|string',
+            'folder_id' => 'nullable|integer',
         ]);
 
         $note->update($validated);

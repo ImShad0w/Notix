@@ -30,7 +30,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <main className="grid grid-cols-[auto_1fr] h-screen w-screen">
       <aside className="overflow-y-auto min-h-screen">
         <NoteSideBar
-          notes={notes}
+          notes={notes.filter(n => n.folder_id === null)}
           folders={folders}
           collapsed={collapsed}
           onToggle={() => setCollapsed(prev => !prev)}

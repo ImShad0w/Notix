@@ -6,13 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Folder extends Model
 {
-    protected $fillable = ["name", "folder_num"];
+    protected $fillable = ["name", "folder_id"];
 
     protected $hidden = ["id"];
 
     public function getRouteKeyName()
     {
-        return 'folder_num';
+        return 'folder_id';
     }
 
     public function user()

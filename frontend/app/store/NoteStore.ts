@@ -5,7 +5,7 @@ interface Note {
   id: number;
   name: string;
   text: string;
-  folder_num: number | null;
+  folder_id: number | null;
 }
 
 interface Folder {
@@ -27,10 +27,14 @@ interface NotesStore {
   saveCurrentNote: () => void;
   createNote: () => void;
   deleteNote: (id: number) => void;
+
+  //Folders part, maybe will put them in a separate store later
   createFolder: () => void;
   setFolders: (folders: Folder[]) => void;
   setActiveFolder: (folder: Folder) => void;
   deleteFolder: (id: number) => void;
+  updateActiveFolder: (name: string) => void;
+  addCurrentNoteToFolder: (id: number | null) => void;
 }
 
 const useNotesStore = create<NotesStore>((set, get) => ({
@@ -38,6 +42,7 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   currentNote: null,
   folders: [],
   activeFolder: null,
+  notesWithoutFolder: [],
 
   setNotes: (notes) => set({ notes }),
   setCurrentNote: (note) => set({ currentNote: note }),
@@ -91,7 +96,7 @@ const useNotesStore = create<NotesStore>((set, get) => ({
       notes.length > 0
         ? Math.max(...notes.map((n) => n.id)) + 1
         : 1;
-    const newNote: Note = { id: nextId, name: "Untitled", text: "Dummy text", folder_num: null };//Create a new Note
+    const newNote: Note = { id: nextId, name: "Untitled", text: "Dummy text", folder_id: null };//Create a new Note
     //Send it to laravel too
     api.post("/api/notes", {
       name: "Untitled",
@@ -128,16 +133,73 @@ const useNotesStore = create<NotesStore>((set, get) => ({
 
   setFolders: (folders) => set({ folders }),
 
-  setActiveFolder: (folder) => set({ activeFolder: folder }),
+  setActiveFolder: (folder) => set((state) => {
+    if (state.activeFolder?.id === folder.id) {
+      return { activeFolder: null };
+    } else {
+      return { activeFolder: folder };
+    }
+  }),
 
   deleteFolder: (id) => {
-    const { folders, activeFolder } = get();
+    const { folders, activeFolder, notes } = get();
     const filteredFolders = folders.filter(folder => folder.id != id);
+
+    //Update notes that belong to the deleted folder: set folder_id to null
+    const updatedNotes = notes.map(note =>
+      note.folder_id === id ? { ...note, folder_id: null } : note
+    );
+
     if (activeFolder) {
       api.delete(`/api/folders/${activeFolder.id}`)
     }
-    set({ folders: filteredFolders });
+    set({ folders: filteredFolders, notes: updatedNotes });
   },
+
+  updateActiveFolder: (name) =>
+    set((state) => {
+      if (!state.activeFolder) return {};
+
+      const updated: Folder = {
+        ...state.activeFolder,
+        name,
+      };
+
+      api.put(`/api/folders/${updated.id}`, {
+        name,
+      });
+
+      return {
+        activeFolder: updated,
+        folders: state.folders.map((f) =>
+          f.id === updated.id ? updated : f
+        ),
+      };
+    }),
+
+  addCurrentNoteToFolder: (id) =>
+    set((state) => {
+      if (!state.currentNote) return {};
+
+      const updated: Note = {
+        ...state.currentNote,
+        folder_id: id,
+      };
+
+      //Send the chnages to the backend
+      api.put(`/api/notes/${updated.id}`, {
+        name: updated.name,
+        text: updated.text,
+        folder_id: id,
+      })
+
+      return {
+        currentNote: updated,
+        notes: state.notes.map((n) =>
+          n.id === updated.id ? updated : n
+        ),
+      };
+    }),
 }));
 
 export default useNotesStore;

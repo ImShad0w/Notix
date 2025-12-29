@@ -9,7 +9,7 @@ interface Note {
   id: number,
   name: string,
   text: string,
-  folder_num: number | null;
+  folder_id: number | null;
 }
 
 interface Folder {
@@ -87,12 +87,11 @@ function NoteSideBar({ notes, folders, onToggle, collapsed }: NoteSideBarProps) 
 
       <div
         className={`${collapsed ? "opacity-0 pointer-events-none" : "opacity-100 translate-x-0"}`}>
-        {notes.map((note: Note) => (
+        {notes.map((note) => (
           <NoteCard note={note} key={note.id} />
         ))}
       </div>
     </section>
-
   )
 }
 
