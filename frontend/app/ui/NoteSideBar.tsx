@@ -30,8 +30,8 @@ function NoteSideBar({ notes, folders, onToggle, collapsed }: NoteSideBarProps) 
   const router = useRouter();
   const { logout } = useAuth();
 
-  function handleCreate() {
-    const id = createNote();
+  async function handleCreate() {
+    const id = await createNote();
     router.push(`/notes/${id}`);
   }
 

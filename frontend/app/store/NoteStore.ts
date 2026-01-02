@@ -25,7 +25,7 @@ interface NotesStore {
   updateCurrentNoteText: (text: string) => void;
   getNote: (id: number | string) => Note | undefined;
   saveCurrentNote: () => void;
-  createNote: () => void;
+  createNote: () => Promise<number>;
   deleteNote: (id: number) => void;
 
   //Folders part, maybe will put them in a separate store later
@@ -84,25 +84,25 @@ const useNotesStore = create<NotesStore>((set, get) => ({
   saveCurrentNote: async () => {
     const { currentNote } = get();
     if (!currentNote) return {};
-    api.put(`/api/notes/${currentNote.id}`, {
-      name: currentNote.name,
-      text: currentNote.text,
-    });
-
+    if (currentNote.name.length < 1) {
+      return {}
+    } else {
+      api.put(`/api/notes/${currentNote.id}`, {
+        name: currentNote.name,
+        text: currentNote.text,
+      });
+    }
   },
-  createNote: () => {
+
+  createNote: async () => {
     const { notes } = get();
-    const nextId = //Since laravel stores the changed notes at the bottom i will recurr to biggest id instead of the last
-      notes.length > 0
-        ? Math.max(...notes.map((n) => n.id)) + 1
-        : 1;
-    const newNote: Note = { id: nextId, name: "Untitled", text: "Dummy text", folder_id: null };//Create a new Note
-    //Send it to laravel too
-    api.post("/api/notes", {
+    const res = await api.post("/api/notes", {
       name: "Untitled",
       text: "Dummy text",
       folder_num: null,
     });
+    const newNote: Note = { id: res.data.data.id, name: "Untitled", text: "Dummy text", folder_id: null };//Create a new Note
+
     set({ notes: [...notes, newNote] })//Append it to the array and the current note
     return newNote.id;
   },
@@ -115,18 +115,13 @@ const useNotesStore = create<NotesStore>((set, get) => ({
     set({ notes: filteredNotes })
   },
 
-  createFolder: () => {
+  createFolder: async () => {
     const { folders } = get();
 
-    const nextId =
-      folders.length > 0
-        ? Math.max(...folders.map((f) => f.id)) + 1
-        : 1;
-    const newFolder: Folder = { id: nextId, name: "Test" };
-
-    api.post("/api/folders", {
+    const res = await api.post("/api/folders", {
       name: "Test",
     })
+    const newFolder: Folder = { id: res.data.data.id, name: "Test" };
 
     set({ folders: [...folders, newFolder] });
   },

@@ -11,6 +11,7 @@ const useFolders = () => {
       setLoading(true);
       try {
         const res = await api.get("/api/folders");
+        console.log(res.data.data);
         setFolders(res.data.data);
       } catch (err: any) {
         console.error(err.message);

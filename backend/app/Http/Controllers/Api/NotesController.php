@@ -9,16 +9,15 @@ use Illuminate\Support\Arr;
 
 class NotesController extends Controller
 {
-    public function show()
+    public function index()
     {
         return NoteResource::collection(
             auth()->user()->notes()->get()
         );
     }
 
-    public function showNote(Note $note)
+    public function show(Note $note)
     {
-        //Sees if the user has notes
         abort_unless($note->user_id === auth()->id(), 403);
 
         return new NoteResource($note);
@@ -26,25 +25,17 @@ class NotesController extends Controller
 
     public function store(Request $request)
     {
-        //Get the requested text for the note
         $validated = $request->validate([
-            "name" => 'required:string|max:255',
-            "text" => 'required:string',
+            "name" => 'required|string|max:255',
+            "text" => 'required|string',
         ]);
 
-        //Get the highest number of the notes of the user
-        $nextNumber = auth()->user()->notes()->max('note_number') + 1;
+        $note = auth()->user()->notes()->create($validated);
 
-        //Create the new note based on the user
-        auth()->user()->notes()->create([
-            ...$validated,
-            'note_number' => $nextNumber,
-        ]);
-
-        return response()->json(["message" => "Succesfully added note!"]);
+        return new NoteResource($note);
     }
 
-    public function modify(Request $request, Note $note)
+    public function update(Request $request, Note $note)
     {
 
         abort_unless($note->user_id === auth()->id(), 403);
@@ -52,7 +43,7 @@ class NotesController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'text' => 'required|string',
-            'folder_id' => 'nullable|integer',
+            'folder_id' => 'nullable|exists:folders,id',
         ]);
 
         $note->update($validated);
@@ -60,7 +51,7 @@ class NotesController extends Controller
         return new NoteResource($note);
     }
 
-    public function delete(Note $note)
+    public function destroy(Note $note)
     {
         abort_unless($note->user_id === auth()->id(), 403);
 

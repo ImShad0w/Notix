@@ -11,6 +11,7 @@ const useNotes = () => {
       setLoading(true);
       try {
         const res = await api.get("/api/notes");
+        console.log(res.data.data);
         setNotes(res.data.data);
       } catch (err: any) {
         console.error(err.message);
