@@ -35,6 +35,34 @@ describe("Notes + folders functionality testing", () => {
   it("can add the current note to the created folder", () => {
     cy.get("div").contains("My Cypress Note2").click();
 
-    cy.get("select").select("Test").should("have.value", 1);
+    cy.get("select").select("Test");
+
+    cy.get("aside").contains("My Cypress Note2").should("not.exist")
+
+    cy.get("aside").contains("Test").click()
+
+    cy.get("aside").contains("My Cypress Note2").should("exist")
+  });
+
+  it("can access the notes inside of the folder", () => {
+    cy.get("aside").contains("Test").click()
+
+    cy.get("aside").contains("My Cypress Note2").click()
+
+    cy.get('input[type="text"]').should("have.value", "My Cypress Note2")
+  })
+  it("can remove the note from the folder", () => {
+    cy.get("aside").contains("Test").click()
+    cy.get("aside").contains("My Cypress Note2").click()
+    cy.get("select").select("No folder")
+    cy.get("aside").contains("My Cypress Note2").should("exist")
+  })
+
+  it("can add note back to folder and delete folder and note still exists", () => {
+    cy.get("aside").contains("My Cypress Note2").click()
+    cy.get("select").select("Test")
+    cy.contains("Test").click()
+    cy.contains('Test').parent().parent().find('[data-cy="delete-folder"]').click()
+    cy.get("aside").contains("My Cypress Note2").should("exist")
   })
 })
