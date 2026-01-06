@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Note;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,11 +17,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-        User::factory()->create([
+        //Create only 1 user
+        $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'password' => Hash::make('password123'),
         ]);
-        Note::factory()->count(20)->create();
+
+        //Cretae 20 notes for said user
+        $user->notes()->saveMany(
+            Note::factory()->count(20)->make()
+        );
     }
 }

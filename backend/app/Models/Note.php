@@ -9,11 +9,15 @@ class Note extends Model
 {
     use HasFactory;
 
-    protected $fillable = ["name", "text", "note_number"];
-    protected $hidden = ["id"];
+    protected $fillable = ["name", "text", "folder_id"];
+    protected $hidden = ["user_id"];
 
-    public function getRouteKeyName()
+    public function user()
     {
-        return 'note_number';
+        return $this->belongsTo(User::class);
+    }
+    public function notes()
+    {
+        return $this->belongsTo(Folder::class);
     }
 }

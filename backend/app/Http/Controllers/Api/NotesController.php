@@ -6,45 +6,60 @@ use Illuminate\Http\Request;
 use App\Models\Note;
 use App\Http\Resources\NoteResource;
 use Illuminate\Support\Arr;
+use App\Http\Controllers\Api\Controller;
+
 class NotesController extends Controller
 {
-    public function show(){
-        return NoteResource::collection(Note::all());
-    }
-
-    public function showNote(Note $note){
-        return $note;
-    }
-
-    public function store(Request $request){
-        //Get the requested text for the note
-        $validated = $request->validate([
-            "name" => 'required:string|max:255',
-            "text" => 'required:string',
-        ]);
-        $nextNumber = Note::max('note_number') + 1;
-        //Create the new note
-        Note::create([
-            ...$validated,
-            "note_number" => $nextNumber,
-        ]);
-        //return Succesfull
-        return response()->json(["message"=>"Succesfully added note!"]);
-    }
-
-    public function modify(Request $request, Note $note)
+    public function index()
     {
+        $this->authorize('viewAny', Note::class);
+
+        return NoteResource::collection(
+            auth()->user()->notes()->get()
+        );
+    }
+
+    public function show(Note $note)
+    {
+        $this->authorize('view', $note);
+
+        return new NoteResource($note);
+    }
+
+    public function store(Request $request)
+    {
+        $this->authorize('create', Note::class);
+
+        $validated = $request->validate([
+            "name" => 'required|string|max:255',
+            "text" => 'required|string',
+        ]);
+
+        $note = auth()->user()->notes()->create($validated);
+
+        return new NoteResource($note);
+    }
+
+    public function update(Request $request, Note $note)
+    {
+
+        $this->authorize('update', $note);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'text' => 'required|string',
+            'folder_id' => 'nullable|exists:folders,id',
         ]);
 
         $note->update($validated);
 
-        return response()->json($note);
+        return new NoteResource($note);
     }
 
-    public function delete (Note $note){
+    public function destroy(Note $note)
+    {
+        $this->authorize('delete', $note);
+
         $note->delete();
     }
 }

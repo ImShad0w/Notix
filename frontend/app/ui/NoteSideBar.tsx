@@ -1,20 +1,37 @@
 import NoteCard from "./NoteCard"
+import FolderCard from "./FolderCard";
 import useNotesStore from "../store/NoteStore";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../providers/AuthProvider";
+import { Edit, Trash2, Power, Sidebar, FolderPlus } from "@deemlol/next-icons";
 
 interface Note {
+  id: number,
   name: string,
   text: string,
-  id: number,
+  folder_id: number | null;
 }
 
-function NoteSideBar({ notes }: { notes: Note[] }) {
+interface Folder {
+  id: number;
+  name: string;
+}
 
-  const { createNote, deleteNote, currentNote } = useNotesStore();
+type NoteSideBarProps = {
+  onToggle: () => void;
+  collapsed: boolean;
+  notes: Note[];
+  folders: Folder[];
+}
+
+function NoteSideBar({ notes, folders, onToggle, collapsed }: NoteSideBarProps) {
+
+  const { createNote, deleteNote, currentNote, createFolder, setActiveFolder, activeFolder } = useNotesStore();
   const router = useRouter();
+  const { logout } = useAuth();
 
-  function handleCreate() {
-    const id = createNote();
+  async function handleCreate() {
+    const id = await createNote();
     router.push(`/notes/${id}`);
   }
 
@@ -24,16 +41,56 @@ function NoteSideBar({ notes }: { notes: Note[] }) {
     router.push("/notes");
   }
 
+  async function handleLogout() {
+    await logout();
+    router.push("/");
+  }
+
+  function handleCreateFolder() {
+    createFolder();
+  }
+
   return (
-    <section className="bg-[#11111b]">
-      <div className="flex gap-10 p-3">
-        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleCreate}>Create note</button>
-        <button className="bg-[#181825] text-[#8c8fa1]" onClick={handleDelete}>Delete note</button>
-        <button className="bg-[#181825] text-[#8c8fa1]">Collapse</button>
+    <section
+      className={`bg-[#11111b] min-h-screen overflow-hidden transition-[width] duration-300 ease-in-out
+      ${collapsed ? "w-16" : "w-64"}`}>
+
+      <div className="flex justify-center gap-1 p-3 pt-5">
+        {!collapsed && (
+          <>
+            <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleCreate}>
+              <Edit size={20} />
+            </button>
+            <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleDelete}>
+              <Trash2 size={20} />
+            </button>
+            <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleLogout}>
+              <Power size={20} />
+            </button>
+            <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={handleCreateFolder}>
+              <FolderPlus size={20} />
+            </button>
+          </>
+        )}
+
+        <button className="cursor-pointer hover:bg-[#cba6f7] hover:text-black text-white transition-colors p-3 rounded-lg" onClick={onToggle}>
+          <Sidebar size={20} />
+        </button>
       </div>
-      {notes.map((note: Note) => (
-        <NoteCard note={note} key={note.id} />
-      ))}
+
+      <div
+        className={`${collapsed ? "opacity-0 pointer-events-none" : "opacity-100 translate-x-0"}`}>
+        {folders.map((folder: Folder) => (
+          <FolderCard folder={folder} key={folder.id} isActive={activeFolder?.id === folder.id} onClick={() => setActiveFolder(folder)} />
+        ))}
+      </div>
+
+      <div
+        className={`${collapsed ? "opacity-0 pointer-events-none" : "opacity-100 translate-x-0"}`}>
+        {notes.map((note) => (
+          <NoteCard note={note} key={note.id} />
+        ))}
+      </div>
     </section>
   )
 }

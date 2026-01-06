@@ -14,7 +14,7 @@ interface NoteCardProps {
 export default function NoteCard({ note }: NoteCardProps) {
   return (
     <Link href={`/notes/${note.id}`}>
-      <div className="p-4 rounded cursor-pointer hover:bg-[#94e2d5]">
+      <div className="p-4 rounded cursor-pointer hover:bg-[#94e2d5] hover:text-black">
         {note.name}
       </div>
     </Link>
