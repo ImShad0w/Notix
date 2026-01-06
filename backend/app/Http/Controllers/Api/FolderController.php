@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Api\Controller;
 use App\Models\Folder;
 use App\Http\Resources\FolderResource;
 use Illuminate\Http\Request;
@@ -11,6 +11,8 @@ class FolderController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Folder::class);
+
         return FolderResource::collection(
             auth()->user()->folders()->get()
         );
@@ -18,13 +20,15 @@ class FolderController extends Controller
 
     public function show(Folder $folder)
     {
-        abort_unless($folder->user_id === auth()->id(), 403);
+        $this->authorize('view', $folder);
 
         return new FolderResource($folder);
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Folder::class);
+
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
         ]);
@@ -36,7 +40,8 @@ class FolderController extends Controller
 
     public function update(Request $request, Folder $folder)
     {
-        abort_unless($folder->user_id === auth()->id(), 403);
+
+        $this->authorize('update', $folder);
 
         $validated = $request->validate([
             'name'      => 'required|string|max:255',
@@ -49,7 +54,7 @@ class FolderController extends Controller
 
     public function destroy(Folder $folder)
     {
-        abort_unless($folder->user_id === auth()->id(), 403);
+        $this->authorize('delete', $folder);
 
         $folder->delete();
 

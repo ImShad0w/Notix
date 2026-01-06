@@ -6,11 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Note;
 use App\Http\Resources\NoteResource;
 use Illuminate\Support\Arr;
+use App\Http\Controllers\Api\Controller;
 
 class NotesController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', Note::class);
+
         return NoteResource::collection(
             auth()->user()->notes()->get()
         );
@@ -18,13 +21,15 @@ class NotesController extends Controller
 
     public function show(Note $note)
     {
-        abort_unless($note->user_id === auth()->id(), 403);
+        $this->authorize('view', $note);
 
         return new NoteResource($note);
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', Note::class);
+
         $validated = $request->validate([
             "name" => 'required|string|max:255',
             "text" => 'required|string',
@@ -38,7 +43,7 @@ class NotesController extends Controller
     public function update(Request $request, Note $note)
     {
 
-        abort_unless($note->user_id === auth()->id(), 403);
+        $this->authorize('update', $note);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -53,7 +58,7 @@ class NotesController extends Controller
 
     public function destroy(Note $note)
     {
-        abort_unless($note->user_id === auth()->id(), 403);
+        $this->authorize('delete', $note);
 
         $note->delete();
     }
